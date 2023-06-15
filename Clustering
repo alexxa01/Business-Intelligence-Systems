@@ -1,0 +1,45 @@
+import pandas as pd
+import numpy as np
+from sklearn.cluster import MeanShift
+from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
+
+input_file = "C:\\Users\\user\\Desktop\\Markovic\\Data.xlsx"
+df = pd.read_excel(input_file)
+
+categorical_columns = ['Kupovina', 'Odrzavanje', 'Vrata', 'Bezbednost']
+
+df[categorical_columns] = df[categorical_columns].astype(str)
+
+label_encoder = LabelEncoder()
+for column in categorical_columns:
+    df[column] = label_encoder.fit_transform(df[column])
+
+data_points = df[['Kupovina', 'Odrzavanje', 'Vrata', 'Bezbednost']].values
+
+mean_shift_model = MeanShift()
+mean_shift_model.fit(data_points)
+
+print('Cluster centers:', mean_shift_model.cluster_centers_)
+print('Labels:', mean_shift_model.labels_)
+
+plt.scatter(
+    mean_shift_model.cluster_centers_[:, 0],
+    mean_shift_model.cluster_centers_[:, 1],
+    marker='o',
+    color='red',
+    s=100
+)
+
+for i in range(len(data_points)):
+    plt.plot(
+        data_points[i, 0],
+        data_points[i, 1],
+        ['ro', 'go', 'yo', 'ko', 'mo'][mean_shift_model.labels_[i]]
+    )
+
+plt.show()
+
+new_data_points = np.array([[4, 3, 2, 1], [1, 2, 3, 4]])  # Example new data points
+predictions = mean_shift_model.predict(new_data_points)
+print('Predictions [(4,3,2,1), (1,2,3,4)]:', predictions)
