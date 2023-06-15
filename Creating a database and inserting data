@@ -1,0 +1,219 @@
+create table Dim_Kupovina
+(
+KupovinaID int not null identity(1,1),
+Vrednost nvarchar(15)
+)
+
+alter table Dim_Kupovina
+add constraint PK_Kupovina primary key (KupovinaID)
+
+insert into Dim_Kupovina (Vrednost)
+values ('Niska')
+
+insert into Dim_Kupovina (Vrednost)
+values ('Srednja')
+
+insert into Dim_Kupovina (Vrednost)
+values ('Visoka')
+
+insert into Dim_Kupovina (Vrednost)
+values ('Vrlo visoka')
+
+
+-----------------------------------------------------
+
+
+create table Dim_Odrzavanje
+(
+OdrzavanjeID int not null identity(1,1),
+Vrednost nvarchar (15)
+)
+
+alter table Dim_Odrzavanje
+add constraint PK_Odrzavanje primary key (OdrzavanjeID)
+
+insert into Dim_Odrzavanje (Vrednost)
+values ('Niska')
+
+insert into Dim_Odrzavanje (Vrednost)
+values ('Srednja')
+
+insert into Dim_Odrzavanje (Vrednost)
+values ('Visoka')
+
+insert into Dim_Odrzavanje (Vrednost)
+values ('Vrlo visoka')
+
+-----------------------------------------------------
+
+create table Dim_Vrata
+(
+VrataID int not null identity(1,1),
+Vrednost nvarchar (15)
+)
+
+alter table Dim_Vrata
+add constraint PK_Vrata primary key (VrataID)
+
+insert into Dim_Vrata(Vrednost)
+values ('2')
+
+insert into Dim_Vrata(Vrednost)
+values ('3')
+
+insert into Dim_Vrata(Vrednost)
+values ('4')
+
+insert into Dim_Vrata(Vrednost)
+values ('Vise od 5')
+
+-------------------------------
+
+create table Dim_BrojPutnika
+(
+BrojPutnikaID int not null identity(1,1),
+Vrednost nvarchar(15)
+)
+
+alter table Dim_BrojPutnika
+add constraint PK_BrojPutnika primary key (BrojPutnikaID)
+
+insert into Dim_BrojPutnika(Vrednost)
+values ('2')
+
+insert into Dim_BrojPutnika(Vrednost)
+values ('4')
+
+insert into Dim_BrojPutnika(Vrednost)
+values ('Vise')
+
+-------------------------------
+
+create table Dim_Prtljaznik
+(
+PrtljaznikID int not null identity(1,1),
+Vrednost nvarchar(15)
+)
+
+alter table Dim_Prtljaznik
+add constraint PK_Prtljaznik primary key (PrtljaznikID)
+
+insert into Dim_Prtljaznik(Vrednost)
+values ('Mala')
+
+insert into Dim_Prtljaznik(Vrednost)
+values ('Srednja')
+
+insert into Dim_Prtljaznik(Vrednost)
+values ('Velika')
+
+-------------------------------
+
+create table Dim_Bezbednost
+(
+BezbednostID int not null identity(1,1),
+Vrednost nvarchar(15)
+)
+
+alter table Dim_Bezbednost
+add constraint PK_Bezbednost primary key (BezbednostID)
+
+insert into Dim_Bezbednost(Vrednost)
+values ('Visoka')
+
+insert into Dim_Bezbednost(Vrednost)
+values ('Srednja')
+
+insert into Dim_Bezbednost(Vrednost)
+values ('Niska')
+
+-------------------------------
+
+create table Dim_Klasa
+(
+KlasaID int not null identity(1,1),
+Vrednost nvarchar(15)
+)
+
+alter table Dim_Klasa
+add constraint PK_Klasa primary key (KlasaID)
+
+insert into Dim_Klasa(Vrednost)
+values ('good')
+
+insert into Dim_Klasa(Vrednost)
+values ('unacc')
+
+insert into Dim_Klasa(Vrednost)
+values ('vgood')
+
+insert into Dim_Klasa(Vrednost)
+values ('acc')
+
+-------------------------------
+create table Fact_Kola
+(
+KolaID int not null ,
+Dim_Kupovina int,
+Dim_Odrzavanje int,
+Dim_Vrata int,
+Dim_BrojPutnika int,
+Dim_Prtljaznik int,
+Dim_Bezbednost int,
+Dim_Klasa int
+)
+
+ 
+
+alter table Fact_Kola
+add constraint FK_Kola_Kupovina foreign key (Dim_Kupovina) references Dim_Kupovina (KupovinaID)
+
+alter table Fact_Kola
+add constraint FK_Kola_Odrzavanje foreign key (Dim_Odrzavanje) references Dim_Odrzavanje (OdrzavanjeID)
+
+alter table Fact_Kola
+add constraint FK_Kola_Vrata foreign key (Dim_Vrata) references Dim_Vrata (VrataID)
+
+alter table Fact_Kola
+add constraint FK_Kola_BrojPutnika foreign key (Dim_BrojPutnika) references Dim_BrojPutnika (BrojPutnikaID)
+
+alter table Fact_Kola
+add constraint FK_Kola_Prtljaznik foreign key (Dim_Prtljaznik) references Dim_Prtljaznik (PrtljaznikID)
+
+alter table Fact_Kola
+add constraint FK_Kola_Bezbednost foreign key (Dim_Bezbednost) references Dim_Bezbednost (BezbednostID)
+
+
+alter table Fact_Kola
+add constraint FK_Kola_Klasa foreign key (Dim_Klasa) references Dim_Klasa (KlasaID)
+
+ALTER TABLE Kola
+ADD ID INT IDENTITY(1,1);
+
+
+INSERT INTO Fact_Kola (KolaID, Dim_Kupovina, Dim_Odrzavanje, Dim_Vrata, Dim_BrojPutnika, Dim_Prtljaznik, Dim_Bezbednost, Dim_Klasa)
+SELECT
+    st.ID,
+    dk.KupovinaID,
+    do.OdrzavanjeID,
+    dv.VrataID,
+    dbp.BrojPutnikaID,
+    dp.PrtljaznikID,
+    db.BezbednostID,
+    dkls.KlasaID
+FROM
+    Kola st
+inner JOIN
+    Dim_Kupovina dk ON st.Kupovina = dk.Vrednost
+inner JOIN
+    Dim_Odrzavanje do ON st.Odrzavanje = do.Vrednost
+inner JOIN
+    Dim_Vrata dv ON st.Vrata = dv.Vrednost
+inner JOIN
+    Dim_BrojPutnika dbp ON st.[Broj putnika] = dbp.Vrednost
+inner JOIN
+    Dim_Prtljaznik dp ON st.Prtljaznik = dp.Vrednost
+inner JOIN
+    Dim_Bezbednost db ON st.Bezbednost = db.Vrednost
+inner JOIN
+    Dim_Klasa dkls ON st.Klasa = dkls.Vrednost;
